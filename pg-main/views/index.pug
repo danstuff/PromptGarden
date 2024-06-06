@@ -1,0 +1,56 @@
+extends layout
+
+block header
+  header
+    .navbar.d-flex.flex-wrap.align-items-center.justify-content-center.justify-content-lg-start.p-2.border-bottom
+      a.navbar-brand.d-flex.align-items-center.mb-2.mb-lg-0.text-white.text-decoration-none(href='/')
+        svg.bi.me-2(width='40', height='32', role='img')
+          use(xlink:href='bootstrap-icons.svg#flower1')
+      ul.nav.col-12.col-lg-auto.me-lg-auto.mb-2.justify-content-center.mb-md-0
+        li
+          a.nav-link.px-2(href='#') Home
+        li
+          a.nav-link.px-2(href='#') Chat
+        li
+          a.nav-link.px-2(href='#') About
+      .text-end
+        block account
+          button.btn.me-2(type='button') Login
+          button.btn.btn-warning(type='button') Sign-up
+
+block content
+  block chatmessages
+  block chatinputbar
+
+block sidebar
+  .d-flex.flex-column.align-items-stretch.flex-shrink-0.bg-body-tertiary.border-end
+    ul.nav.nav-tabs
+      
+      // TODO List
+      li.nav-item
+        a.nav-link.active(href='#') Context A
+        
+      li.nav-item
+        a.nav-link(href='#') ...
+
+    .list-group.list-group-flush.border-bottom.overflow-y-auto
+
+      // TODO List
+      a.list-group-item.list-group-item-action.py-3.lh-sm(draggable='true' data-bs-toggle='modal' data-bs-target='#modalEditContextItem' href='#')
+        .d-flex.w-100.align-items-center.justify-content-between
+          strong Greg
+          small.text-body-secondary Person
+        .col-10.mb-1.small Some placeholder content in a paragraph below the header for Greg.
+
+  .modal.fade(id='modalEditContextItem' tabIndex='-1')
+    .modal-dialog.modal-xl
+      .modal-content
+        // TODO Dynamics
+        .modal-header
+          h1.modal-title.fs-5 Edit Person Info
+        .modal-body
+          input.form-control(type='text' placeholder='Person\'s Name' id='modalEditContextItemHeader')
+          textarea.form-control(placeholder='Person\'s Description' id='modalEditContextItemText' style='height: 500px;')
+        .modal-footer
+          button.btn.btn-secondary(data-bs-dismiss='modal') Cancel
+          button.btn.btn-primary(data-bs-dismiss='modal') Save and Close

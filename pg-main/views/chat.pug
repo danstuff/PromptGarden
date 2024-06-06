@@ -1,0 +1,72 @@
+extends index
+
+block account
+  .dropstart
+    a.d-block.link-body-emphasis.text-decoration-none.dropdown-toggle(href='#', data-bs-toggle='dropdown')
+      img(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
+    .dropdown-menu.text-small.shadow
+          ul.list-unstyled.mb-0
+            li  
+              h3.dropdown-header My Account
+            li
+              a.dropdown-item.d-flex.gap-2(href='#')  
+                p.lh-lg.mb-0 Settings
+            li
+              a.dropdown-item.d-flex.gap-2(href='#') 
+                p.lh-lg.mb-0 Sign Out
+
+block chatmessages
+  .d-flex.flex-column.flex-grow-1.overflow-y-auto
+
+    // TODO List
+    .d-flex.justify-content-end.m-4
+      p.bg-secondary-subtle.rounded.p-2 Hello world!
+    .d-flex
+      p.bg-body.rounded.p-2.m-4
+        img.me-3(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
+        span How are you? 
+
+block chatinputbar
+  .container-fluid.align-items-center.border-top
+    .d-inline-flex.justify-content-left.gap-3.mx-2.mt-2
+
+      // TODO List
+      button.btn.btn-primary.rounded-pill.d-flex.align-items-center(style='height: 1.75rem')
+        span
+          svg.bi.m-2.text-light(width='14', height='14' fill='currentColor')
+            use(xlink:href='bootstrap-icons.svg#three-dots')
+          span(style='font-size: 0.75rem') summarize
+
+    .d-flex.gap-3.mx-2.my-2
+
+      .flex-shrink-0.dropdown-center
+        a.d-block.link-body-emphasis.text-decoration-none.dropdown-toggle.mt-1(href='#', data-bs-toggle='dropdown')
+          img(src='https://github.com/mdo.png', alt='mdo', width='48', height='48', class='rounded-circle')
+
+        .dropdown-menu.text-small.shadow
+          ul.list-unstyled.mb-0
+            li  
+              h3.dropdown-header AI Persona
+
+            // TODO List
+            li
+              a.dropdown-item.d-flex.gap-2.active(href='#')  
+                img(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
+                p.lh-lg.mb-0 Standard
+            li
+              a.dropdown-item.d-flex.gap-2(href='#') 
+                img(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle') 
+                p.lh-lg.mb-0 Formal
+
+            li
+              hr.dropdown-divider
+            li
+              a.dropdown-item(href='#') Edit personas...
+
+      .form-floating.w-100
+        textarea.form-control(placeholder='Chat with AI...' id='chatInputBox')
+        label(for='chatInputBox') Chat with AI...
+      
+      button.btn.btn-primary.rounded-pill.d-flex.align-items-center(style='height: 3.5rem')
+        svg.bi.m-2.text-light(width='14', height='14' fill='currentColor')
+          use(xlink:href='bootstrap-icons.svg#send-fill')
