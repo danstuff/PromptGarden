@@ -1,4 +1,37 @@
-extends index
+extends header
+
+block sidebar
+  .d-flex.flex-column.align-items-stretch.flex-shrink-0.bg-body-tertiary.border-end
+    ul.nav.nav-tabs
+      
+      // TODO List
+      li.nav-item
+        a.nav-link.active(href='#') Context A
+        
+      li.nav-item
+        a.nav-link(href='#') ...
+
+    .list-group.list-group-flush.border-bottom.overflow-y-auto
+
+      // TODO List
+      a.list-group-item.list-group-item-action.py-3.lh-sm(draggable='true' data-bs-toggle='modal' data-bs-target='#promptModal' href='#')
+        .d-flex.w-100.align-items-center.justify-content-between
+          strong Greg
+          small.text-body-secondary Person
+        .col-10.mb-1.small Some placeholder content in a paragraph below the header for Greg.
+
+  .modal.fade(id='promptModal' tabIndex='-1')
+    .modal-dialog.modal-xl
+      .modal-content
+        // TODO Dynamics
+        .modal-header
+          h1.modal-title.fs-5(id='promptModalHeader') Placeholder
+        .modal-body
+          input.form-control(type='text' placeholder='Person\'s Name' id='promptModalEditHeader')
+          textarea.form-control(placeholder='Person\'s Description' id='promptModalEditText' style='height: 500px;')
+        .modal-footer
+          button.btn.btn-secondary(data-bs-dismiss='modal') Cancel
+          button.btn.btn-primary(data-bs-dismiss='modal') Save and Close
 
 block account
   .dropstart
@@ -15,7 +48,8 @@ block account
               a.dropdown-item.d-flex.gap-2(href='#') 
                 p.lh-lg.mb-0 Sign Out
 
-block chatmessages
+block content
+  // messages
   .d-flex.flex-column.flex-grow-1.overflow-y-auto
 
     // TODO List
@@ -26,7 +60,7 @@ block chatmessages
         img.me-3(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
         span How are you? 
 
-block chatinputbar
+  // input bar
   .container-fluid.align-items-center.border-top
     .d-inline-flex.justify-content-left.gap-3.mx-2.mt-2
 

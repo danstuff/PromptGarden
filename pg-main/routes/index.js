@@ -1,12 +1,10 @@
-var express = require('express');
-var env = require('dotenv');
-var router = express.Router();
+import express from 'express';
 
-env.config();
+var indexRouter = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+// GET home page
+indexRouter.get('/', function(req, res, next) {
   res.render('chat');
 });
 
-module.exports = router;
+export { indexRouter };

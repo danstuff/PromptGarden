@@ -1,0 +1,12 @@
+extends login 
+
+block title
+   h1.h3.mb-3.fw-normal Create Account
+
+block repeat 
+  .form-floating
+    input#floatingPassword.form-control(type='password', placeholder='Password')
+    label(for='floatingPassword') Repeat Password
+
+block submit
+  button.btn.btn-primary.w-100.py-2(type='submit') Create Account
