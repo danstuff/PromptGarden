@@ -40,12 +40,9 @@ block account
     .dropdown-menu.text-small.shadow
           ul.list-unstyled.mb-0
             li  
-              h3.dropdown-header My Account
+              h3.dropdown-header #{name}
             li
-              a.dropdown-item.d-flex.gap-2(href='#')  
-                p.lh-lg.mb-0 Settings
-            li
-              a.dropdown-item.d-flex.gap-2(href='#') 
+              a.dropdown-item.d-flex.gap-2.g_id_signout(href='/logout') 
                 p.lh-lg.mb-0 Sign Out
 
 block content

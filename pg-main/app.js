@@ -1,16 +1,14 @@
 import dotenv from 'dotenv';
-
 import createError from 'http-errors';
 import path from 'path';
-import cookieParser from 'cookie-parser';
-
 import logger from 'morgan';
+import passport from 'passport';
 import express from 'express';
+import session from 'express-session';
 
-import { indexRouter } from './routes/index.js';
+import { editorRouter } from './routes/editor.js';
 import { loginRouter } from './routes/login.js';
-import { createRouter } from './routes/create.js';
-import { userRouter } from './routes/user.js';
+import { logoutRouter } from './routes/logout.js';
 
 dotenv.config();
 var app = express();
@@ -23,7 +21,13 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(session({
+  secret: process.env.COOKIE_SECRET,
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // use static routes
 app.use(express.static(path.join(import.meta.dirname, 'public')));
@@ -32,10 +36,14 @@ app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'bootstrap
 app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'bootstrap-icons')));
 
 // router setup
-app.use('/', indexRouter);
+app.use('/editor', editorRouter);
 app.use('/login', loginRouter);
-app.use('/create', createRouter);
-app.use('/user', userRouter);
+app.use('/logout', logoutRouter);
+
+// DEBUG Route index to login
+app.get('/', function(req, res, next) {  
+  res.redirect('/login');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

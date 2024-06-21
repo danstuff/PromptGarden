@@ -4,8 +4,7 @@ block header
   header
     .navbar.d-flex.flex-wrap.align-items-center.justify-content-center.justify-content-lg-start.p-2.border-bottom
       a.navbar-brand.d-flex.align-items-center.mb-2.mb-lg-0.text-white.text-decoration-none(href='/')
-        svg.bi.me-2(width='40', height='32', role='img')
-          use(xlink:href='bootstrap-icons.svg#flower1')
+        img.bi.ms-2(width='32', height='32', src='images/icon.svg')
       ul.nav.col-12.col-lg-auto.me-lg-auto.mb-2.justify-content-center.mb-md-0
         li
           a.nav-link.px-2(href='#') Home
@@ -15,5 +14,4 @@ block header
           a.nav-link.px-2(href='#') About
       .text-end
         block account
-          button.btn.me-2(type='button') Login
-          button.btn.btn-warning(type='button') Sign-up
+          button.btn.btn-warning(type='button', href='/editor') Get Started
