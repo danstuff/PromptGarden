@@ -3,15 +3,18 @@ html
   head
     title PromptGarden
     meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='css/bootstrap.min.css')
-    link(rel='icon', type='image/x-icon', href='images/icon.svg')
-    script(src='js/bootstrap.bundle.min.js')
-    script(src='jquery.min.js')
+    link(rel='icon', type='image/x-icon', href='images/favicon.svg')
+    link(rel='stylesheet', href='bootstrap.min.css')
+    script(src='bootstrap.bundle.min.js')
     block scripts
   body
-    block main
-      main.container-fluid.p-0.d-inline-flex(style='height: 100vh;')
-        block sidebar
-        .d-flex.flex-column.flex-grow-1
+    .container-fluid.p-0.d-flex.flex-column.vh-100
+      block main
+        .d-flex.w-100.position-absolute(style='z-index: 1')
           block header
-          block content
+        main.p-0.d-inline-flex.flex-grow-1
+          block sidebar
+          .d-flex.flex-column.w-100
+            block content
+        block floating
+

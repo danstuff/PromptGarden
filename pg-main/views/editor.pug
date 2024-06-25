@@ -1,103 +1,100 @@
 extends header
 
+block scripts
+    script(src='jquery.min.js')
+    script(src='purify.min.js')
+    script(src='javascripts/utils.js')
+    script(src='javascripts/prompt.js')
+    script(src='javascripts/chat.js')
+
 block sidebar
-  .d-flex.flex-column.align-items-stretch.flex-shrink-0.bg-body-tertiary.border-end
-    ul.nav.nav-tabs
-      
-      // TODO List
-      li.nav-item
-        a.nav-link.active(href='#') Context A
-        
-      li.nav-item
-        a.nav-link(href='#') ...
+  .d-flex.flex-column.align-items-stretch.bg-body-tertiary.border-end.vh-100
+  
+    // Prompt list
+    .list-group.list-group-flush.overflow-y-auto.vh-100(style='margin-top: 43px;')
+      #pg-prompt-list
 
-    .list-group.list-group-flush.border-bottom.overflow-y-auto
+      // Add new prompt
+      a#pg-prompt-new.list-group-item.list-group-item-action.py-3.d-flex.align-items-center.justify-content-center.text-decoration-none.text-primary.border-bottom(style='cursor: pointer; width: 300px;' data-bs-toggle='modal' data-bs-target='#pg-prompt-modal') 
+        img(width='24' height='24' src='images/plus.svg')
+        span.me-2 New Prompt
 
-      // TODO List
-      a.list-group-item.list-group-item-action.py-3.lh-sm(draggable='true' data-bs-toggle='modal' data-bs-target='#promptModal' href='#')
-        .d-flex.w-100.align-items-center.justify-content-between
-          strong Greg
-          small.text-body-secondary Person
-        .col-10.mb-1.small Some placeholder content in a paragraph below the header for Greg.
-
-  .modal.fade(id='promptModal' tabIndex='-1')
-    .modal-dialog.modal-xl
+  // Context item editor
+  #pg-prompt-modal.modal.fade(tabIndex='-1' data-bs-backdrop="static" data-bs-keyboard="false")
+    .modal-dialog.modal-lg
       .modal-content
-        // TODO Dynamics
         .modal-header
-          h1.modal-title.fs-5(id='promptModalHeader') Placeholder
+          h1#pg-prompt-modal-header.modal-title.fs-5 Edit
         .modal-body
-          input.form-control(type='text' placeholder='Person\'s Name' id='promptModalEditHeader')
-          textarea.form-control(placeholder='Person\'s Description' id='promptModalEditText' style='height: 500px;')
+          input#pg-prompt-modal-edit-header.form-control(type='text' placeholder='Prompt Name')
+          textarea#pg-prompt-modal-edit-description.form-control(style='height: 100px;' placeholder='Provide some additional context for your AI chat.')
         .modal-footer
           button.btn.btn-secondary(data-bs-dismiss='modal') Cancel
-          button.btn.btn-primary(data-bs-dismiss='modal') Save and Close
+          button#pg-prompt-modal-save.btn.btn-primary(data-bs-dismiss='modal') Save and Close
+
+block links
 
 block account
-  .dropstart
-    a.d-block.link-body-emphasis.text-decoration-none.dropdown-toggle(href='#', data-bs-toggle='dropdown')
-      img(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
-    .dropdown-menu.text-small.shadow
+  .dropdown
+    a.dropdown-toggle.text-decoration-none.me-1(data-bs-toggle='dropdown') #{user.displayName}
+    .dropdown-menu.dropdown-menu-sm-end.text-small.shadow-none
           ul.list-unstyled.mb-0
-            li  
-              h3.dropdown-header #{name}
             li
               a.dropdown-item.d-flex.gap-2.g_id_signout(href='/logout') 
                 p.lh-lg.mb-0 Sign Out
 
 block content
-  // messages
-  .d-flex.flex-column.flex-grow-1.overflow-y-auto
+  .d-flex.flex-column.flex-grow-1.align-items-center.overflow-y-auto.vh-100
+    // TODO document injection
+    #pg-document-view.h-100.d-flex.align-items-center
+      a(href="#") Open a Document
 
-    // TODO List
-    .d-flex.justify-content-end.m-4
-      p.bg-secondary-subtle.rounded.p-2 Hello world!
-    .d-flex
-      p.bg-body.rounded.p-2.m-4
-        img.me-3(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
-        span How are you? 
+block floating 
+  .position-fixed.bottom-0.end-0.bg-body-tertiary.border(style='width:350px;')
+    // Chatbox header
+    .border.w-100.bg-primary.d-flex
+      a.d-flex.align-items-center.text-decoration_none.m-1.w-100(data-bs-toggle="collapse" href="#pg-chat-history")
+        img(width='16' height='16' src='images/caret.svg')
+        p.my-0.ms-1.text-light.small.align-self-center.lh-sm AI Chat
+    
+    // Chatbox messages
+    #pg-chat-history.collapse.show.flex-column.flex-shrink-1.overflow-y-auto(style='max-height: 300px;')
 
-  // input bar
-  .container-fluid.align-items-center.border-top
-    .d-inline-flex.justify-content-left.gap-3.mx-2.mt-2
+    // Chatbox input bar
+    .container-fluid.p-0.border-top.w-100
 
-      // TODO List
-      button.btn.btn-primary.rounded-pill.d-flex.align-items-center(style='height: 1.75rem')
-        span
-          svg.bi.m-2.text-light(width='14', height='14' fill='currentColor')
-            use(xlink:href='bootstrap-icons.svg#three-dots')
-          span(style='font-size: 0.75rem') summarize
+      // Utility pills
+      //.d-inline-flex.justify-content-left.p-1.gap-3
+        button.btn.btn-primary.rounded-pill.d-flex.align-items-center.fs-sm(style='height: 1.75rem; font-size: 0.75rem;') summarize
 
-    .d-flex.gap-3.mx-2.my-2
+      .d-flex.gap-2.mx-2.my-1.w-100
 
-      .flex-shrink-0.dropdown-center
-        a.d-block.link-body-emphasis.text-decoration-none.dropdown-toggle.mt-1(href='#', data-bs-toggle='dropdown')
-          img(src='https://github.com/mdo.png', alt='mdo', width='48', height='48', class='rounded-circle')
+        // AI Persona Dropdown
+        .dropdown-center
+          a.d-block.link-body-emphasis.text-decoration-none.dropdown-toggle.mt-1(href='#' data-bs-toggle='dropdown')
+            img(src='https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg' width='28' height='28' class='rounded-circle')
 
-        .dropdown-menu.text-small.shadow
-          ul.list-unstyled.mb-0
-            li  
-              h3.dropdown-header AI Persona
+          .dropdown-menu.text-small.shadow
+            ul.list-unstyled.mb-0
+              li  
+                h3.dropdown-header AI Persona
 
-            // TODO List
-            li
-              a.dropdown-item.d-flex.gap-2.active(href='#')  
-                img(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle')
-                p.lh-lg.mb-0 Standard
-            li
-              a.dropdown-item.d-flex.gap-2(href='#') 
-                img(src='https://github.com/mdo.png', alt='mdo', width='32', height='32', class='rounded-circle') 
-                p.lh-lg.mb-0 Formal
+              // TODO List
+              li
+                a.dropdown-item.d-flex.gap-2.active(href='#')  
+                  img(src='https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg' width='32' height='32' class='rounded-circle')
+                  p.lh-lg.mb-0 Standard
+              li
+                a.dropdown-item.d-flex.gap-2(href='#') 
+                  img(src='https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg' width='32' height='32' class='rounded-circle') 
+                  p.lh-lg.mb-0 Formal
 
-            li
-              hr.dropdown-divider
-            li
-              a.dropdown-item(href='#') Edit personas...
+              li
+                hr.dropdown-divider
+              li
+                a.dropdown-item(href='#') Edit personas...
 
-      .form-floating.w-100
-        textarea.form-control(placeholder='Chat with AI...' id='chatInputBox')
-        label(for='chatInputBox') Chat with AI...
-      
-      button.btn.btn-primary.rounded-pill.d-flex.align-items-center(style='height: 3.5rem')
-        svg.bi.m-2.text-light(width='14', height='14' fill='currentColor')
-          use(xlink:href='bootstrap-icons.svg#send-fill')
+        textarea#pg-chat-input.flex-grow-1(style='height: 36px; min-height: 36px;' placeholder='Chat with AI...')
+        
+        button#pg-chat-send.btn.btn-primary.rounded-pill.d-flex.align-items-center.p-2.me-3(style='width: 32px; height: 32px;')
+          img(width='16' height='16' src='images/send.svg')

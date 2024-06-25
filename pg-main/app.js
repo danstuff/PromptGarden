@@ -31,16 +31,17 @@ app.use(passport.session());
 
 // use static routes
 app.use(express.static(path.join(import.meta.dirname, 'public')));
+app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'bootstrap', 'dist', 'css')));
+app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'bootstrap', 'dist', 'js')));
 app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'jquery', 'dist')));
-app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'bootstrap', 'dist')));
-app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'bootstrap-icons')));
+app.use(express.static(path.join(import.meta.dirname, 'node_modules', 'dompurify', 'dist')));
 
 // router setup
 app.use('/editor', editorRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 
-// DEBUG Route index to login
+// TODO index page, for now redirect to login
 app.get('/', function(req, res, next) {  
   res.redirect('/login');
 });

@@ -1,11 +1,8 @@
 import express from 'express';
+import { routeLogout } from './utils/session.js';
 
 var logoutRouter = express.Router();
 
-logoutRouter.get('/', async function(req, res, next) {
-  req.logOut(function() {
-    res.redirect('/');
-  });
-});
+logoutRouter.get('/', routeLogout);
 
 export { logoutRouter };  

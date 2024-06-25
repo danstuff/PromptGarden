@@ -1,17 +1,16 @@
 extends layout
 
 block header
-  header
-    .navbar.d-flex.flex-wrap.align-items-center.justify-content-center.justify-content-lg-start.p-2.border-bottom
-      a.navbar-brand.d-flex.align-items-center.mb-2.mb-lg-0.text-white.text-decoration-none(href='/')
-        img.bi.ms-2(width='32', height='32', src='images/icon.svg')
-      ul.nav.col-12.col-lg-auto.me-lg-auto.mb-2.justify-content-center.mb-md-0
-        li
-          a.nav-link.px-2(href='#') Home
-        li
-          a.nav-link.px-2(href='#') Chat
-        li
-          a.nav-link.px-2(href='#') About
+  header.d-flex.w-100
+    .navbar.d-flex.flex-wrap.justify-content-between.p-0.px-2.border-bottom.w-100.bg-body
+      a.navbar-brand.text-white.text-decoration-none(href='/')
+        img.bi.ms-1(width='32', height='32', src='images/favicon.svg')     
+      block links 
+        ul.nav.col-12.col-lg-auto.justify-content-center
+          li
+            a.nav-link.px-2(href='#') Home
+          li
+            a.nav-link.px-2(href='#') Editor
       .text-end
         block account
-          button.btn.btn-warning(type='button', href='/editor') Get Started
+          button.btn.btn-primary(type='button', href='/editor') Get Started
