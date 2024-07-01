@@ -1,9 +1,18 @@
+import { getCurrentDocumentId } from "./document.js";
+import { appError, appIsDemo, appLog } from "./log.js";
+
 const MAX_PROMPTS = 64;
 
 const MAX_PROMPT_HEADER_CHARS = 128;
 const MAX_PROMPT_DESCRIPTION_CHARS = 512;
 
-var last_clicked_prompt = null;
+var last_modal_prompt = null;
+
+// TODO drag and drop
+
+function sanitize(str, max_length) {
+    return DOMPurify.sanitize(str.substr(0, Math.min(str.length, max_length)));
+}
 
 function getPromptContents(prompt) {
     var header_text = prompt.children('.pg-prompt-header').html();
@@ -21,19 +30,26 @@ function loadPromptToModal(prompt) {
     $('#pg-prompt-modal-header').html('Edit \''+contents.header+'\'');
     $('#pg-prompt-modal-edit-header').val(contents.header);
     $('#pg-prompt-modal-edit-description').val(contents.description);
+
+    last_modal_prompt = prompt;
 }
 
-function savePromptFromModal(prompt) {
+function savePromptFromModal() {
+    if (!last_modal_prompt) {
+        appError('Modal prompt not found');
+        return;
+    }
+
     var header_text = $('#pg-prompt-modal-edit-header').val();
     var description_text = $('#pg-prompt-modal-edit-description').val();
 
     header_text = sanitize(header_text, MAX_PROMPT_HEADER_CHARS);
     description_text = sanitize(description_text, MAX_PROMPT_DESCRIPTION_CHARS);
 
-    prompt.children('.pg-prompt-header').html(header_text);
-    prompt.children('.pg-prompt-description').html(description_text);
+    last_modal_prompt.children('.pg-prompt-header').html(header_text);
+    last_modal_prompt.children('.pg-prompt-description').html(description_text);
 
-    postPrompt(prompt);
+    last_modal_prompt = null;
 }
 
 function addPrompt(header_text, description_text) {
@@ -69,74 +85,53 @@ function addPrompt(header_text, description_text) {
 
     // Add callback to load modal contents from clicked prompt
     prompt.on('click', function() {
-        clientLog('clicked prompt:');
-        clientLog($(this));
-        last_clicked_prompt = $(this);
-        loadPromptToModal(last_clicked_prompt);
+        appLog('Clicked prompt');
+        loadPromptToModal($(this));
     });
 
     return prompt;
 }
 
-function postPrompts() {
-    if (CLIENT_MODE == 'demo') {
+function putPrompts() {
+    if (appIsDemo()) {
         return;
     }
 
-    var prompts = {};
+    var prompts = [];
     $('#pg-prompt-list').children().each(function() {
-       prompts.append(getPromptContents($(this)));
+       prompts.push(getPromptContents($(this)));
     });
 
-    $.ajax('/prompts', {
+    $.ajax(`/editor/doc/${getCurrentDocumentId()}/prompts`, {
         method: 'PUT',
-        data: prompts,
+        data: JSON.stringify({ 
+            prompts: prompts
+        }),
+        contentType: 'application/json; charset=utf-8',
     }).done(function(data, status) {
-        clientLog('PUT prompts: '+ status);
+        appLog(`PUT prompts: ${status}`);
     });
 }
 
 function getPrompts() {
     $('#pg-prompt-list').empty();
 
-    if (CLIENT_MODE == 'demo') {
-        addPrompt('Example Prompt', 'Click here to provide some additional context for your AI chat.');
+    if (appIsDemo()) {
+        addPrompt(
+            'Example Prompt',
+            'Click here to provide some additional context for your AI chat.'
+        );
     }
     else {
-        $.ajax('/prompts', {
+        $.ajax(`/editor/doc/${getCurrentDocumentId()}/prompts`, {
             method: 'GET',
         }).done(function(data, status) {
-            clientLog('GET prompts: '+ status);
-            clientLog(data);
-            for (var i = 0; i < data.prompts.length; i++) {
+            appLog(`GET prompts: ${status}`);
+            for (var i = 0; i < data.prompts?.length; i++) {
                 addPrompt(data.prompts[i].header, data.prompts[i].description);
             }
         });
     }
 }
 
-$(function() {    
-    // Save modal contents to clicked prompt
-    $('#pg-prompt-modal-save').on('click', function() {
-        clientLog('clicked Save');
-        if (!last_clicked_prompt) {
-            clientError('Last clicked prompt not found');
-            return;
-        }
-        savePromptFromModal(last_clicked_prompt);
-        postPrompts();
-        last_clicked_prompt = null;
-    });
-    
-    // Create a new prompt and load it into the modal
-    $('#pg-prompt-new').on('click', function() {
-        clientLog('clicked New Prompt');
-        last_clicked_prompt = addPrompt('New Prompt', '');
-        postPrompts();
-        if (last_clicked_prompt) {
-            loadPromptToModal(last_clicked_prompt);
-        }
-    });
-
-    getPrompts();
-});
+export { loadPromptToModal, savePromptFromModal, getPrompts, addPrompt, putPrompts };

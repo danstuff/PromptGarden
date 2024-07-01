@@ -1,4 +1,11 @@
-const MAX_CHAT_MESSAGE_CHARS = 1024;
+import { appIsDemo, appLog } from "./log.js";
+import { getCurrentDocumentId, getDocumentSelection, reloadDocument } from "./document.js";
+
+const MAX_CHAT_MESSAGE_CHARS = 512;
+
+function sanitize(str, max_length) {
+    return DOMPurify.sanitize(str.substr(0, Math.min(str.length, max_length)));
+}
 
 function addChatMessage(justify, color, text) {
     var message = $('<div>', { 
@@ -13,7 +20,6 @@ function addChatMessage(justify, color, text) {
     message.append(content);
 
     $('#pg-chat-history').append(message);
-
     $('#pg-chat-history').scrollTop($('#pg-chat-history').prop('scrollHeight'));
 }
 
@@ -32,7 +38,7 @@ function submitHumanMessage() {
     addChatHumanMessage(message_text);
     $('#pg-chat-input').val('');
 
-    if (CLIENT_MODE == 'demo') {    
+    if (appIsDemo()) {    
         setTimeout(function() {
             addChatAIMessage('Hello and welcome to PromptGarden!');
 
@@ -41,25 +47,18 @@ function submitHumanMessage() {
             }, 1000);
         }, 1000);
     } else {
-        $.ajax({
-            method: 'POST',
-            data: message_text,
+        $.ajax(`/editor/doc/${getCurrentDocumentId()}`, {
+            method: 'PUT',
+            data: JSON.stringify({ 
+                message: message_text,
+                selection: getDocumentSelection(),
+            }),
+            contentType: 'application/json; charset=utf-8',
         }).done(function(data, status) {
-            clientLog('POST chat message: '+ status);
-            // TODO break up data into doc content and chat message
-            addChatAIMessage(data); 
+            appLog(`PUT chat: ${status}`);
+            reloadDocument();
         })
     }
 }
 
-$(function() {
-    $('#pg-chat-send').on('click', function() {
-        submitHumanMessage();
-    });
-
-    $('#pg-chat-input').on('keyup', function(e) {
-        if (e.which == 13 && e.ctrlKey) {
-            submitHumanMessage();
-        }
-    });
-});
+export { submitHumanMessage };

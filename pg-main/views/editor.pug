@@ -3,9 +3,7 @@ extends header
 block scripts
     script(src='jquery.min.js')
     script(src='purify.min.js')
-    script(src='javascripts/utils.js')
-    script(src='javascripts/prompt.js')
-    script(src='javascripts/chat.js')
+    script(type='module' src='javascripts/client.js')
 
 block sidebar
   .d-flex.flex-column.align-items-stretch.bg-body-tertiary.border-end.vh-100
@@ -36,7 +34,7 @@ block links
 
 block account
   .dropdown
-    a.dropdown-toggle.text-decoration-none.me-1(data-bs-toggle='dropdown') #{user.displayName}
+    a.dropdown-toggle.text-decoration-none.me-1(href='#' data-bs-toggle='dropdown') #{user.displayName}
     .dropdown-menu.dropdown-menu-sm-end.text-small.shadow-none
           ul.list-unstyled.mb-0
             li
@@ -44,10 +42,23 @@ block account
                 p.lh-lg.mb-0 Sign Out
 
 block content
-  .d-flex.flex-column.flex-grow-1.align-items-center.overflow-y-auto.vh-100
-    // TODO document injection
-    #pg-document-view.h-100.d-flex.align-items-center
-      a(href="#") Open a Document
+  .d-flex.flex-column.flex-grow-1.align-items-center.vh-100
+    .overflow-y-auto.w-100.h-100.d-flex.justify-content-center
+      #pg-document-view.w-100.p-4(style='margin-top: 43px;')
+        if document
+          p #{document}
+        else
+          .h-100.w-100.d-flex.align-items-center.justify-content-center
+            a#pg-document-view-modal-open(href='#' data-bs-toggle='modal' data-bs-target='#pg-document-modal') Open a Document
+
+  // Document selector modal
+  #pg-document-modal.modal.fade(tabIndex='-1')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h1.modal-title.fs-5 Select a Document
+          button.btn-close(data-bs-dismiss='modal')
+        #pg-document-modal-list.modal-body
 
 block floating 
   .position-fixed.bottom-0.end-0.bg-body-tertiary.border(style='width:350px;')
