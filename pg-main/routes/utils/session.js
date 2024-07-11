@@ -12,7 +12,8 @@ passport.use(new GoogleStrategy({
     callbackURL: 'http://localhost:3000/login/auth/google/callback',
   }, 
   function (accessToken, refreshToken, profile, done) {
-    profile.accessToken = accessToken;
+    profile.accessToken = accessToken; // TODO access token will need refreshing
+    profile.refreshToken = refreshToken;
     addUserIfNew(profile);
     return done(null, profile);
   }

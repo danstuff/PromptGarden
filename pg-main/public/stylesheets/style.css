@@ -1,8 +1,12 @@
+.pg-below-navbar {
+  margin-top: 43px;
+}
+
 .pg-highlight {
-  background: #0d6efd !important;
+  background: #350484 !important;
   color: white !important;
 }
 
-#pg-document-view {
-  cursor: pointer !important;
+.pg-pointer {
+  cursor: pointer;
 }

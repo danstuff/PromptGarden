@@ -3,30 +3,30 @@ import DOMPurify from 'isomorphic-dompurify';
 
 import { appLog, appTry } from './log.js';
 
-function getDrive(user) {
+async function getDrive(user) {
   const oAuthClient = new google.auth.OAuth2();
   var drive = null;
 
-  appTry(function (){
+  await appTry(async function (){
     oAuthClient.setCredentials({ access_token: user?.accessToken });
     drive = google.drive({ version: 'v3', auth: oAuthClient });
   });
   return drive;
 }
 
-function getDocs(user) {
+async function getDocs(user) {
   const oAuthClient = new google.auth.OAuth2();
   var docs = null;
 
-  appTry(function (){
+  await appTry(async function (){
     oAuthClient.setCredentials({ access_token: user?.accessToken });
     docs = google.docs({ version: 'v1', auth: oAuthClient });
   });
-  return drive;
+  return docs;
 }
 
 async function listDocuments(user) {
-  const drive = getDrive(user);
+  const drive = await getDrive(user);
   var res = null;
   await appTry(async function() {
       res = await drive.files.list({
@@ -40,7 +40,7 @@ async function listDocuments(user) {
 }
 
 async function getDocument(user, documentid) {
-  const drive = getDrive(user);
+  const drive = await getDrive(user);
   var res = null;
   await appTry(async function() {
     res = await drive.files.export({
@@ -54,36 +54,37 @@ async function getDocument(user, documentid) {
 }
 
 async function putDocument(user, documentid, start, end, text) {
-  const docs = getDocs(user);
+  const docs = await getDocs(user);
   var res = null;
-  appTry(async function() {
+  await appTry(async function() {
     const body = {
-      requests: [
+      'requests': [
         {
-          deleteContentRange: {
-            range: {
-              startIndex: start,
-              endIndex: end,
+          'deleteContentRange': {
+            'range': {
+              'startIndex': start,
+              'endIndex': end,
             },
           },
         },
         {
-          insertText: {
-            location: {
-              index: start,
+          'insertText': {
+            'location': {
+              'index': start,
             },
-            text: DOMPurify.sanitize(text),
+            'text': DOMPurify.sanitize(text),
           }
         },
       ]
     }
     res = await docs.documents.batchUpdate({
       documentId: documentid,
-      body: body,
+      resource: body,
     });
   }); 
   
-  appLog(`Put document: ${res}`);
+  appLog(`Put document`);
+  return 200;
 }
 
 export { listDocuments, getDocument, putDocument };

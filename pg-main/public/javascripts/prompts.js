@@ -24,6 +24,12 @@ function getPromptContents(prompt) {
     return {  header: header_text, description: description_text };
 }
 
+function clearPromptModal() {
+    $('#pg-prompt-modal-header').html('New Prompt');
+    $('#pg-prompt-modal-edit-header').val('');
+    $('#pg-prompt-modal-edit-description').val('');
+}
+
 function loadPromptToModal(prompt) {
     var contents = getPromptContents(prompt);
 
@@ -35,19 +41,19 @@ function loadPromptToModal(prompt) {
 }
 
 function savePromptFromModal() {
-    if (!last_modal_prompt) {
-        appError('Modal prompt not found');
-        return;
-    }
-
     var header_text = $('#pg-prompt-modal-edit-header').val();
     var description_text = $('#pg-prompt-modal-edit-description').val();
 
     header_text = sanitize(header_text, MAX_PROMPT_HEADER_CHARS);
     description_text = sanitize(description_text, MAX_PROMPT_DESCRIPTION_CHARS);
 
-    last_modal_prompt.children('.pg-prompt-header').html(header_text);
-    last_modal_prompt.children('.pg-prompt-description').html(description_text);
+    if (last_modal_prompt) {
+        last_modal_prompt.children('.pg-prompt-header').html(header_text);
+        last_modal_prompt.children('.pg-prompt-description').html(description_text);
+    }
+    else {
+        addPrompt(header_text, description_text);
+    }
 
     last_modal_prompt = null;
 }
@@ -134,4 +140,9 @@ function getPrompts() {
     }
 }
 
-export { loadPromptToModal, savePromptFromModal, getPrompts, addPrompt, putPrompts };
+function deleteCurrentPrompt() {
+    last_modal_prompt?.remove();
+    last_modal_prompt = null;
+}
+
+export { clearPromptModal, savePromptFromModal, getPrompts, addPrompt, putPrompts, deleteCurrentPrompt };

@@ -5,3 +5,10 @@ var openai = new OpenAI({
   project: process.env.OPENAI_PROJECT_ID,
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+async function getLLMReply(text, persona, message) {
+  // TODO
+  return text + ' NULL';
+}
+
+export { getLLMReply };

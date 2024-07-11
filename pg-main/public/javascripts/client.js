@@ -1,6 +1,8 @@
 import { appLog } from './log.js';
-import { savePromptFromModal, loadPromptToModal, addPrompt, putPrompts } from './prompts.js';
-import { listDocuments } from './document.js';
+import { savePromptFromModal, putPrompts, deleteCurrentPrompt, clearPromptModal } from './prompts.js';
+import { listDocuments, reloadDocument } from './document.js';
+import { clearPersonaModal, deleteCurrentPersona, savePersonaFromModal, getPersonae } from './persona.js';
+import { submitHumanMessage } from './chat.js';
 
 $(function() {    
     // PROMPTS
@@ -14,13 +16,18 @@ $(function() {
     // Create a new prompt and load it into the modal
     $('#pg-prompt-new').on('click', function() {
         appLog('Clicked New Prompt');
-        loadPromptToModal(addPrompt('New Prompt', ''));
+        clearPromptModal();
+    });
+
+    // Delete the prompt currently in the modal
+    $('#pg-prompt-delete').on('click', function() {
+        deleteCurrentPrompt();
         putPrompts();
     });
 
     // DOCUMENT
     // Load in the document list when modal is opened
-    $('#pg-document-view-modal-open').on('click', function() {
+    $('#pg-document-view-open').on('click', function() {
         appLog('Click document view');
         $('#pg-document-modal-list').empty();
 
@@ -30,6 +37,13 @@ $(function() {
 
         listDocuments();
     });
+
+    // Reload from the file menu
+    $('#pg-document-reload').on('click', function() {
+        reloadDocument();
+    });
+
+    // TODO undo and redo
 
     // CHAT
     // Click to submit human message
@@ -43,4 +57,25 @@ $(function() {
             submitHumanMessage();
         }
     });
+
+    // PERSONAE
+    // Save modal contents to clicked persona
+    $('#pg-persona-modal-save').on('click', function() {
+        appLog('Clicked save');
+        savePersonaFromModal();
+    });
+    
+    // Create a new persona and load it into the modal
+    $('#pg-persona-new').on('click', function() {
+        appLog('Clicked New Persona');
+        clearPersonaModal();
+    });
+
+    // Delete the persona currently in the modal
+    $('#pg-persona-delete').on('click', function() {
+        deleteCurrentPersona();
+        clearPersonaModal();
+    });
+
+    getPersonae();
 });

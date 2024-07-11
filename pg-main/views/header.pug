@@ -3,14 +3,15 @@ extends layout
 block header
   header.d-flex.w-100
     .navbar.d-flex.flex-wrap.justify-content-between.p-0.px-2.border-bottom.w-100.bg-body
-      a.navbar-brand.text-white.text-decoration-none(href='/')
-        img.bi.ms-1(width='32', height='32', src='images/favicon.svg')     
-      block links 
-        ul.nav.col-12.col-lg-auto.justify-content-center
-          li
-            a.nav-link.px-2(href='#') Home
-          li
-            a.nav-link.px-2(href='#') Editor
+      .d-flex
+        a.navbar-brand.text-white.text-decoration-none(href='/')
+          img.bi.ms-1(width='32', height='32', src='images/favicon.svg')     
+        block links 
+          ul.nav.col-12.col-lg-auto.justify-content-center
+            li
+              a.nav-link.px-2(href='#') Home
+            li
+              a.nav-link.px-2(href='#') Editor
       .text-end
         block account
           button.btn.btn-primary(type='button', href='/editor') Get Started

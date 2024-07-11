@@ -1,7 +1,6 @@
 import { appLog } from "./log.js";
 import { getPrompts } from "./prompts.js";
 
-// TODO select range in document
 // TODO undo and redo
 
 var current_documentid = 0;
@@ -11,21 +10,25 @@ function getCurrentDocumentId() {
     return current_documentid;
 }
 
-function countLettersBefore(parent, target, saw_child) {
+function countLettersBefore(parent, target) {
     var sum = 0;
+    var saw_child = false;
     if (!saw_child) {
         parent.children().each(function() {
-            if ($(this).get(0) === target.get(0)) {
+            if (saw_child || $(this).get(0) === target.get(0)) {
                 saw_child = true;
             } else if ($(this).children().length > 0) {
-                sum += countLettersBefore($(this), target, saw_child);
+                var result = countLettersBefore($(this), target);
+                sum += result.sum;
+                saw_child = saw_child || result.saw_child;
             }
             else {
-                sum += saw_child ? 0 : $(this).text().length;  
+                sum += saw_child ? 0 : $(this).text().length + 1;  
+                console.log($(this).text(), sum);
             }
         });
     }
-    return sum;
+    return { sum: sum, saw_child: saw_child };
 }
 
 function getDocumentSelection() {
@@ -34,20 +37,26 @@ function getDocumentSelection() {
     }
 
     const text = current_selected_div.text();
-    const selection_start = countLettersBefore($('#pg-document-view'), current_selected_div)+1;
+    const selection_start = countLettersBefore($('#pg-document-view'), current_selected_div).sum+1;
 
     return {
         text: text,
         start: selection_start,
+        end: selection_start + text.length,
     }
 }
 
 function registerChildClickEvent(div) {
+    div.addClass('pg-pointer');
     div.on('click', function() {
         $(this).addClass('pg-highlight');
-        
         current_selected_div?.removeClass('pg-highlight');
-        current_selected_div = $(this);
+        
+        if (current_selected_div?.get(0) === $(this).get(0)) {
+            current_selected_div = null;
+        } else {
+            current_selected_div = $(this);
+        }
     });
 }
 
@@ -62,7 +71,7 @@ function registerParentClickEvents(parent) {
     });
 }
 
-function getDocument(id) {
+function getDocument(name, id) {
     $.ajax('/editor/doc/'+id, {
         method: 'GET',
     }).done(function(data, status) {
@@ -72,26 +81,19 @@ function getDocument(id) {
         $('#pg-document-view').html(DOMPurify.sanitize(data));
         registerParentClickEvents($('#pg-document-view'));
 
+        if (name) {
+            $('#pg-document-title').text(DOMPurify.sanitize(name));
+        }
+
         getPrompts(id);
     });
 }
 
 function reloadDocument() {
-    getDocument(current_documentid);
+    if (current_documentid != 0) {
+        getDocument(null, current_documentid);
+    }
 }
-
-/*function putDocument(start, end, text) {
-    $.ajax('/editor/doc/'+id, {
-        method: 'PUT',
-        data: {
-            start: start, 
-            end: end,
-            text: text,
-        }
-    }).done(function(data, status) {
-        appLog(`PUT document ${id}: ${status}`);
-    });
-}*/
 
 function addDocLink(name, id) {
     var link = $('<a>', {
@@ -100,7 +102,7 @@ function addDocLink(name, id) {
     });
     link.html(name);    
     link.on('click', function() {
-        getDocument(id);
+        getDocument(name, id);
     });
     
     var newline = $('<br>');
@@ -109,17 +111,17 @@ function addDocLink(name, id) {
 }
 
 function listDocuments() {
-    $.ajax('/editor/doc/list', {
+    $.ajax('/editor/list/docs', {
         method: 'GET',
     }).done(function(data, status) {
         appLog(`GET document list: ${status}`);
         $('#pg-document-modal-list').empty();
-        
-        for (var i = 0; i < data.files.length; i++) {
+
+        for (var i = 0; i < data.files?.length; i++) {
             addDocLink(data.files[i].name, data.files[i].id);
         }
     });
 }
 
 
-export { getCurrentDocumentId, getDocument, reloadDocument, listDocuments, getDocumentSelection };
+export { getCurrentDocumentId, reloadDocument, listDocuments, getDocumentSelection };
