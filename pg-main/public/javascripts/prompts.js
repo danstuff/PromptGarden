@@ -21,20 +21,22 @@ function getPromptContents(prompt) {
     header_text = sanitize(header_text, MAX_PROMPT_HEADER_CHARS);
     description_text = sanitize(description_text, MAX_PROMPT_DESCRIPTION_CHARS);
 
-    return {  header: header_text, description: description_text };
+    return {  name: header_text, description: description_text };
 }
 
 function clearPromptModal() {
     $('#pg-prompt-modal-header').html('New Prompt');
     $('#pg-prompt-modal-edit-header').val('');
+    $('#pg-prompt-modal-edit-header').show();
     $('#pg-prompt-modal-edit-description').val('');
 }
 
 function loadPromptToModal(prompt) {
     var contents = getPromptContents(prompt);
 
-    $('#pg-prompt-modal-header').html('Edit \''+contents.header+'\'');
-    $('#pg-prompt-modal-edit-header').val(contents.header);
+    $('#pg-prompt-modal-header').html('Edit \''+contents.name+'\'');
+    $('#pg-prompt-modal-edit-header').val(contents.name);
+    $('#pg-prompt-modal-edit-header').hide();
     $('#pg-prompt-modal-edit-description').val(contents.description);
 
     last_modal_prompt = prompt;
@@ -47,14 +49,13 @@ function savePromptFromModal() {
     header_text = sanitize(header_text, MAX_PROMPT_HEADER_CHARS);
     description_text = sanitize(description_text, MAX_PROMPT_DESCRIPTION_CHARS);
 
-    if (last_modal_prompt) {
-        last_modal_prompt.children('.pg-prompt-header').html(header_text);
+    if (last_modal_prompt && description_text) {
         last_modal_prompt.children('.pg-prompt-description').html(description_text);
+        putPrompt(last_modal_prompt);
     }
-    else {
-        addPrompt(header_text, description_text);
+    else if (header_text && description_text) {
+        putPrompt(addPrompt(header_text, description_text));
     }
-
     last_modal_prompt = null;
 }
 
@@ -98,26 +99,6 @@ function addPrompt(header_text, description_text) {
     return prompt;
 }
 
-function putPrompts() {
-    if (appIsDemo()) {
-        return;
-    }
-
-    var prompts = [];
-    $('#pg-prompt-list').children().each(function() {
-       prompts.push(getPromptContents($(this)));
-    });
-
-    $.ajax(`/editor/doc/${getCurrentDocumentId()}/prompts`, {
-        method: 'PUT',
-        data: JSON.stringify({ 
-            prompts: prompts
-        }),
-        contentType: 'application/json; charset=utf-8',
-    }).done(function(data, status) {
-        appLog(`PUT prompts: ${status}`);
-    });
-}
 
 function getPrompts() {
     $('#pg-prompt-list').empty();
@@ -129,20 +110,53 @@ function getPrompts() {
         );
     }
     else {
-        $.ajax(`/editor/doc/${getCurrentDocumentId()}/prompts`, {
+        $.ajax(`/editor/list/doc/${getCurrentDocumentId()}/prompts`, {
             method: 'GET',
         }).done(function(data, status) {
             appLog(`GET prompts: ${status}`);
             for (var i = 0; i < data.prompts?.length; i++) {
-                addPrompt(data.prompts[i].header, data.prompts[i].description);
+                addPrompt(data.prompts[i].name, data.prompts[i].description);
             }
         });
     }
 }
 
+function putPrompt(prompt) {
+    if (appIsDemo()) {
+        return;
+    }
+
+    var contents = getPromptContents(prompt);
+    $.ajax(`/editor/doc/${getCurrentDocumentId()}/prompt/${contents.name}`, {
+        method: 'PUT',
+        data: JSON.stringify({ 
+            description: contents.description,
+        }),
+        contentType: 'application/json; charset=utf-8',
+    }).done(function(data, status) {
+        appLog(`PUT prompt: ${status}`);
+    });
+}
+
 function deleteCurrentPrompt() {
-    last_modal_prompt?.remove();
+    if (appIsDemo()) {
+        return;
+    }
+
+    if (!last_modal_prompt) {
+        appError('Last modal prompt not found');
+        return;
+    }
+
+    var prompt = getPromptContents(last_modal_prompt);
+    $.ajax(`/editor/doc/${getCurrentDocumentId()}/prompt/${prompt.name}`, {
+        method: 'DELETE',
+    }).done(function(data, status) {
+        appLog(`DELETE prompt: ${status}`);
+    });
+
+    last_modal_prompt.remove();
     last_modal_prompt = null;
 }
 
-export { clearPromptModal, savePromptFromModal, getPrompts, addPrompt, putPrompts, deleteCurrentPrompt };
+export { clearPromptModal, savePromptFromModal, getPrompts, addPrompt, deleteCurrentPrompt };

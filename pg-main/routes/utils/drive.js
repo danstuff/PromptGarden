@@ -8,7 +8,7 @@ async function getDrive(user) {
   var drive = null;
 
   await appTry(async function (){
-    oAuthClient.setCredentials({ access_token: user?.accessToken });
+    oAuthClient.setCredentials({ access_token: user?.accessToken, refresh_token: user?.refresh_token });
     drive = google.drive({ version: 'v3', auth: oAuthClient });
   });
   return drive;
@@ -50,7 +50,7 @@ async function getDocument(user, documentid) {
   });
 
   appLog(`Got document ${documentid} - ${res?.data?.length} chars`);
-  return DOMPurify.sanitize(res?.data);
+  return res?.data;
 }
 
 async function putDocument(user, documentid, start, end, text) {
@@ -72,7 +72,7 @@ async function putDocument(user, documentid, start, end, text) {
             'location': {
               'index': start,
             },
-            'text': DOMPurify.sanitize(text),
+            'text': text,
           }
         },
       ]

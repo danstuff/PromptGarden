@@ -45,7 +45,7 @@ function submitHumanMessage() {
         $.ajax(`/editor/doc/${getCurrentDocumentId()}`, {
             method: 'PUT',
             data: JSON.stringify({ 
-                message: message_text,
+                query: message_text,
                 selection: getDocumentSelection(),
                 persona: getActivePersonaDescription(),
             }),

@@ -15,7 +15,8 @@ block links
           li
             a#pg-document-reload.dropdown-item(href='#') Reload
             a#pg-document-open.dropdown-item(href='#' data-bs-toggle='modal' data-bs-target='#pg-document-modal') Open
-            a.dropdown-item(href='/editor') Close
+            a.dropdown-item(href='/editor') Close 
+            
     li
       .dropdown
         a.nav-link.px-2.dropdown-toggle(href='#' data-bs-toggle="dropdown") Edit
@@ -23,6 +24,14 @@ block links
           li
             a#pg-document-undo.dropdown-item.disabled(href='#') Undo
             a#pg-document-redo.dropdown-item.disabled(href='#') Redo
+    
+    li
+      .dropdown
+        a.nav-link.px-2.dropdown-toggle(href='#' data-bs-toggle="dropdown") Prompts
+        ul.dropdown-menu 
+          li
+            a#pg-document-undo.dropdown-item.disabled(href='#') Import
+            a#pg-document-redo.dropdown-item.disabled(href='#') Export
 
 block account
   .dropdown

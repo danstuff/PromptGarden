@@ -19,11 +19,7 @@ async function appTry(try_func) {
   try {
     await try_func();
   } catch (error) {
-    if (error?.errors) {
-      appError(error.errors);
-    } else {
-      appError(error);
-    }
+    appError(error);
   }
 }
 

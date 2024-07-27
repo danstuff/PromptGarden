@@ -111,6 +111,12 @@ function addDocLink(name, id) {
 }
 
 function listDocuments() {
+    $('#pg-document-modal-list').empty();
+
+    var loading = $('<p>');
+    loading.html('Loading...');
+    $('#pg-document-modal-list').append(loading);
+
     $.ajax('/editor/list/docs', {
         method: 'GET',
     }).done(function(data, status) {

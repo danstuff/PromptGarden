@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { appError, appLog } from './log.js';
-import DOMPurify from 'dompurify';
 
 dotenv.config();
 
@@ -59,7 +58,7 @@ async function addUserIfNew(user) {
 async function getPrompts(user, documentid) {
   if (!dbValid(user, [ documentid ])) {
     return [{ 
-      header: 'Sample Prompt 1',
+      name: 'Sample Prompt 1',
       description: 'Provide some additional context for your AI chat.' 
     }];
   }
@@ -70,23 +69,38 @@ async function getPrompts(user, documentid) {
   return prompt_query.rows;
 }
 
-// TODO race condition here: if two PUTs are done in quick succession, leads to dupe entries.
-// Should definitely just PUT individual prompts instead...
-async function putPrompts(user, documentid, prompts) {
-  if (!dbValid(user, [ documentid ])) {
+async function putPrompt(user, documentid, name, description) {
+  if (!dbValid(user, [ documentid, name, description ])) {
+    return 400;
+  }
+
+  var exists_query =
+    await pgClient.query(
+      `select * from prompts where userid = '${user.id}' and documentid = '${documentid}' and name = '${name}'`);
+
+  if (exists_query.rowCount > 0) {
+    await pgClient.query(
+      `update prompts set description = '${description}' where userid = '${user.id}' and documentid = '${documentid}' and name = '${name}'`);
+  }
+  else {
+    await pgClient.query(
+      `insert into prompts values ` +
+      `('${user.id}', '${documentid}', '${name}', '${description}')`
+    );
+  }
+
+  return 200;
+}
+
+async function deletePrompt(user, documentid, name) {
+  if (!dbValid(user, [ documentid, name ])) {
     return 400;
   }
 
   await pgClient.query(
-    `delete from prompts where userid = '${user.id}' and documentid = '${documentid}'`
-  );
+    `delete from prompts where userid = '${user.id}' and documentid = '${documentid}' and name = '${name}'`);
 
-  for (var i in prompts) {
-    await pgClient.query(
-      `insert into prompts values ` +
-      `('${user.id}', '${documentid}', '${prompts[i].header}', '${prompts[i].description}')`
-    );
-  }
+  return 200;
 }
 
 async function getPersonae(user) {
@@ -104,9 +118,6 @@ async function putPersona(user, name, description) {
   if (!dbValid(user, [ name, description ])) {
     return 400;
   }
-
-  name = DOMPurify.sanitize(name);
-  description = DOMPurify.sanitize(description);
 
   var exists_query =
     await pgClient.query(`select * from personae where userid = '${user.id}' and name = '${name}'`);
@@ -128,12 +139,10 @@ async function deletePersona(user, name) {
     return 400;
   }
 
-  name = DOMPurify.sanitize(name);
-
   await pgClient.query(
     `delete from personae where userid = '${user.id}' and name = '${name}'`);
 
-    return 200;
+  return 200;
 }
 
-export { addUserIfNew, getPrompts, putPrompts, getPersonae, putPersona, deletePersona };
+export { addUserIfNew, getPrompts, putPrompt, deletePrompt, getPersonae, putPersona, deletePersona };

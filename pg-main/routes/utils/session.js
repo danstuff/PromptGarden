@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import passport from 'passport';
 import GoogleStrategy from 'passport-google-oauth20';
+import http from 'http';
 import { addUserIfNew } from './database.js';
 
 dotenv.config();
@@ -76,6 +77,8 @@ function authScope(req, res, next) {
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/drive',
     ],
+    accessType: 'offline',
+    prompt: 'consent',
   })(req, res, next);
 }
 
@@ -84,6 +87,10 @@ function authRedirect(req, res, next) {
     successRedirect: '/editor',
     failureRedirect: '/login',
   })(req, res, next);
+}
+
+function getAccessToken(req) {
+  http.post(`https://oauth2.googleapis.com/tokeninfo?id_token=${req?.session?.passport?.user?.accessToken}`);
 }
 
 

@@ -1,5 +1,5 @@
 import { appLog } from './log.js';
-import { savePromptFromModal, putPrompts, deleteCurrentPrompt, clearPromptModal } from './prompts.js';
+import { savePromptFromModal, deleteCurrentPrompt, clearPromptModal } from './prompts.js';
 import { listDocuments, reloadDocument } from './document.js';
 import { clearPersonaModal, deleteCurrentPersona, savePersonaFromModal, getPersonae } from './persona.js';
 import { submitHumanMessage } from './chat.js';
@@ -10,7 +10,6 @@ $(function() {
     $('#pg-prompt-modal-save').on('click', function() {
         appLog('Clicked save');
         savePromptFromModal();
-        putPrompts();
     });
     
     // Create a new prompt and load it into the modal
@@ -22,21 +21,21 @@ $(function() {
     // Delete the prompt currently in the modal
     $('#pg-prompt-delete').on('click', function() {
         deleteCurrentPrompt();
-        putPrompts();
     });
 
     // DOCUMENT
-    // Load in the document list when modal is opened
+    // Load in the document list when "Open a Document" is clicked
     $('#pg-document-view-open').on('click', function() {
         appLog('Click document view');
-        $('#pg-document-modal-list').empty();
-
-        var loading = $('<p>');
-        loading.html('Loading...');
-        $('#pg-document-modal-list').append(loading);
-
         listDocuments();
     });
+
+    // Load in the document list when File->Open is clicked
+    $('#pg-document-open').on('click', function() {
+        appLog('Click open');
+        listDocuments();
+    });
+
 
     // Reload from the file menu
     $('#pg-document-reload').on('click', function() {
