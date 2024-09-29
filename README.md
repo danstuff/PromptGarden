@@ -1,2 +1,4 @@
 # PromptGarden
-The goal here is to be able to store a large number of GPT prompt fragments in one place, and iterate on them or construct prompts with just a few clicks. Should be optimized for copywriting and creative work.
+PromptGarden connects Google Docs with ChatGPT. It demonstrates usage of the Google Docs API to allow ChatGPT to make live edits to Google documents.
+
+This is a free-to-use sample application and is not currently live hosted, but you can see a semi-non-functional UI demo (here)[https://yostlabs.net/play/pg/].
